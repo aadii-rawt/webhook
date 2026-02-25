@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Google_Sans, Ubuntu } from "next/font/google";
 import "./globals.css";
+import { DataProvider } from "@/context/Context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -8,8 +9,8 @@ const geistSans = Geist({
 });
 
 const ubuntu = Ubuntu({
-  weight : "400",
-  variable : "--font-ubuntu",
+  weight: "400",
+  variable: "--font-ubuntu",
   subsets: ["latin"],
 });
 
@@ -21,7 +22,7 @@ const GoogleSans = Google_Sans({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-  
+
 });
 
 export const metadata: Metadata = {
@@ -39,7 +40,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${ubuntu.variable} ${GoogleSans.variable} antialiased`}
       >
-        {children}
+        <DataProvider >
+          {children}
+        </DataProvider>
       </body>
     </html>
   );

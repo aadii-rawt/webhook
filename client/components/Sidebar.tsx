@@ -1,22 +1,24 @@
 "use client"
 import React, { useState, useRef, useEffect } from 'react'
 import { HiOutlineDotsHorizontal, HiOutlineTrash } from 'react-icons/hi'
-import { IoCopyOutline } from 'react-icons/io5'
+import { IoCheckmarkSharp, IoCopyOutline } from 'react-icons/io5'
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md'
 import { motion, AnimatePresence } from "motion/react";
 import { VscClearAll } from 'react-icons/vsc'
+import useData from '@/context/Context'
 
 const Sidebar = () => {
     const [drawer, setDrawer] = useState(false)
     const [menu, setMenu] = useState(false)
-
     const menuRef = useRef<HTMLDivElement>(null)
     const drawerRef = useRef<HTMLDivElement>(null)
 
+    const { selectedWebhook, webhookURLs } = useData()
+    
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             const target = event.target as Node
-            
+
             if (menuRef.current && !menuRef.current.contains(target)) {
                 setMenu(false)
             }
@@ -72,7 +74,7 @@ const Sidebar = () => {
             {/* Drawer */}
             <div className='relative' ref={drawerRef}>
                 <div className='border rounded-xl border-white/20 p-3 py-2.5 flex items-center justify-between'>
-                    <h1 className='text-sm font-medium'>https:284093834kl3lk</h1>
+                    <h1 className='text-sm font-medium'>{selectedWebhook?.url}</h1>
 
                     <div className='flex items-center gap-1'>
                         <button className='text-white/50 text-xs hover:text-white transition'>
@@ -102,17 +104,15 @@ const Sidebar = () => {
                             transition={{ duration: 0.25 }}
                             className='bg-[#232222] absolute w-full mt-0.5 py-1 border border-white/20 rounded-xl px-2 overflow-hidden'
                         >
-                            <div className='py-2 px-3 rounded-lg hover:bg-[#272727] cursor-pointer'>
-                                <h1 className='text-sm font-medium'>https:284093834kl3lk</h1>
-                            </div>
-                            <div className='py-2 px-3 rounded-lg hover:bg-[#272727] cursor-pointer'>
-                                <h1 className='text-sm font-medium'>https:284093834kl3lk</h1>
-                            </div>
-                            <div className='py-2 px-3 rounded-lg hover:bg-[#272727] cursor-pointer'>
-                                <h1 className='text-sm font-medium'>https:284093834kl3lk</h1>
-                            </div>
+                            {webhookURLs?.map((web) => (
+                                <div className='py-2 px-3 rounded-lg flex items-center justify-between  hover:bg-[#272727] cursor-pointer'>
+                                    <h1 className='text-sm font-medium'>{web.url}</h1>
+                                    {web.url == selectedWebhook.url && <IoCheckmarkSharp />}
+
+                                </div>
+                            ))}
                             <hr className='border-white/20 border-[0.9px] my-2' />
-                            <div className='py-2 px-3 rounded-lg hover:bg-[#272727] cursor-pointer'>
+                            <div className='py-2 px-3 rounded-lg  hover:bg-[#272727] cursor-pointer'>
                                 <h1 className='text-sm font-medium'>New Webhook</h1>
                             </div>
                         </motion.div>
