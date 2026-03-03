@@ -23,7 +23,7 @@ const RequestPreview = () => {
   console.log(selectedResquest);
 
   return (
-    <div className="flex-1 h-full bg-[#181818] overflow-y-auto relative">
+    <div className="flex-1 h-full bg-[#181818] overflow-y-auto ovefi relative">
       {selectedResquest ?
         <div className='p-10 '>
           <h1 className='text-xl'>{selectedResquest?.type} <span className='text-gray-400'>/</span></h1>
@@ -78,14 +78,18 @@ const RequestPreview = () => {
             </div>
           </div>
         </div>
-        : <div className="w-full h-full flex items-center justify-center relative overflow-visible">
+        : <div className="w-full h-full flex items-center justify-center relative overflow-hidden">
           <motion.img
-            animate={{ x: ["0%", "-50%", "0%"] }}
+            animate={{ x: [0, -20, 0] }}
             transition={{
               repeat: Infinity,
               duration: 2,
+              ease: "easeInOut"
             }}
-            src="./arrow.svg" alt="arrow icon" className='absolute top-16 left-5 z-[9999]' />
+            src="./arrow.svg"
+            alt="arrow icon"
+            className="absolute top-16 left-5 z-50"
+          />
           <div className='max-w-2xl'>
             <h1 className='text-4xl font-medium font-google-sans'>Webhook allows you to receive and inspect webhook requests. <span className='text-gray-200/50'>Use your unique webhook URL to send requests to send any webhook to it. </span></h1>
             <hr className='my-6 border-[0.9px] border-white/20 ' />

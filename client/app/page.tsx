@@ -1,5 +1,6 @@
 "use client"
 import { motion } from "motion/react";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -12,7 +13,7 @@ export default function Home() {
         <p className="text-lg text-center max-w-2xl font-google-sans">
           WebHook is a powerful tool for managing your webhooks with ease.
         </p>
-        <motion.button initial={{scale : 0}} animate={{scale : 1, transition : {duration : 0.5}}} className="bg-[#EB3678] cursor-pointer font-medium px-4 py-2 rounded-3xl my-8">Create Webhook</ motion.button>
+       <Link href={"webhook"} className="bg-[#EB3678] cursor-pointer font-medium px-4 py-2 rounded-3xl my-8">Create Webhook</Link>
       </div>
     </div>
   );
