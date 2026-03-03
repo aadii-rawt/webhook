@@ -48,7 +48,7 @@ export const DataProvider = ({ children }: { children: any }) => {
     const getResponse = async () => {
         try {
             if (!selectedWebhook.id) return
-            const { data } = await axios.get("http://localhost:4000/inspect", {
+            const { data } = await axios.get(`${process.env.URL}/inspect`, {
                 params: {
                     webhookId: selectedWebhook.id
                 }
@@ -82,7 +82,7 @@ export const DataProvider = ({ children }: { children: any }) => {
 
     const clearAllReponse = async () => {
         try {
-            await axios.delete("http://localhost:4000/inspect/deleteAll", {params : {webhookId : selectedWebhook.id}})
+            await axios.delete(`${process.env.URL}/inspect/deleteAll`, {params : {webhookId : selectedWebhook.id}})
             setResponse([])
             setSelectedRequest(null)
         } catch (error) {
@@ -92,7 +92,7 @@ export const DataProvider = ({ children }: { children: any }) => {
 
     const deleteResponse = async (responseId) => {
         try {
-            await axios.delete("http://localhost:4000/inspect", {params : {responseId}})
+            await axios.delete(`${process.env.URL}/inspect`, {params : {responseId}})
             setResponse([])
             const udpateResponse = response?.filter((res) => res.id != responseId)
             setResponse(udpateResponse)
