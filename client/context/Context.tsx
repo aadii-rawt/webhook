@@ -1,67 +1,121 @@
 "use client"
-import api from "@/config/axios";
+import api from "@/axios/axios";
 import axios from "axios";
 import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 
 interface WebhookURLInter {
-    url : string
+    url: string
 }
 
 interface ContextInter {
-    selectedWebhook : WebhookURLInter,
-    setSelectedWebhook : Dispatch<SetStateAction<WebhookURLInter>>,
-    webhookURLs : WebhookURLInter[],
+    selectedWebhook: WebhookURLInter,
+    setSelectedWebhook: Dispatch<SetStateAction<WebhookURLInter>>,
+    webhookURLs: WebhookURLInter[],
     setWebhookURLs: Dispatch<SetStateAction<WebhookURLInter[]>>,
+    createWebhook: () => void,
+    deleteWebhook: () => void,
+    response: any,
+    selectedResquest: any,
+    setSelectedRequest: any,
+    getResponse: () => any,
+    clearAllReponse : () => void,
+    deleteResponse : () => void | any
 }
 
 const dataContext = createContext<ContextInter>(null);
 
-export const DataProvider = ({children} : {children : any}) => {
-    const [selectedWebhook,setSelectedWebhook] = useState( {
-            url : "http.google.com"
-        },)
-
-    const [webhookURLs, setWebhookURLs] = useState<WebhookURLInter[]>([
-        {
-            url : "http.google.com"
-        },
-        {
-            url : "http.facebook.com"
-        },
-        {
-            url : "http.amazon.com"
-        },
-    ])
-
-    const checkWebhook = () => {
-        const exist = localStorage.getItem("webhooks");
-        if(exist) {
-            return JSON.parse(exist)
-        }
-
-        return false
-    }
+export const DataProvider = ({ children }: { children: any }) => {
+    const [webhookURLs, setWebhookURLs] = useState<WebhookURLInter[] | []>([])
+    const [selectedWebhook, setSelectedWebhook] = useState(null);
+    const [response, setResponse] = useState<any>([])
+    const [selectedResquest, setSelectedRequest] = useState(null)
 
     const createWebhook = async () => {
         try {
-            const res = await axios.post("http://localhost:4000/api/v1/webhook/create")
-            localStorage.setItem("webhooks", JSON.stringify(res.data.data))
-            console.log(res.data);        
+            const { data } = await api.post("/webhook/create")
+            const localWebhook = localStorage.getItem("webhooks")
+            setSelectedWebhook(data.data)
+            setWebhookURLs((prev) => ([...prev, data.data]))
+            const udpatedData = localWebhook ? [...JSON.parse(localWebhook), data.data] : [data.data]
+            localStorage.setItem("webhooks", JSON.stringify(udpatedData))
         } catch (error) {
-            
+            console.log(error)
+        }
+    }
+
+    const getResponse = async () => {
+        try {
+            if (!selectedWebhook.id) return
+            const { data } = await axios.get("http://localhost:4000/inspect", {
+                params: {
+                    webhookId: selectedWebhook.id
+                }
+            });
+            setResponse(data.data)
+            if(data?.data?.length > 0) {
+                setSelectedRequest(data.data?.[0])
+            }
+        } catch (error) {
+
+        }
+    }
+
+    const deleteWebhook = async () => {
+        try {
+            if (!selectedWebhook.id) return
+            await api.delete("/webhook", {
+                params: {
+                    webhookId: selectedWebhook?.id
+                }
+            })
+
+            const updatedWebhooks = webhookURLs?.filter((item) => item.id != selectedWebhook.id)
+            setWebhookURLs(updatedWebhooks);
+            setSelectedWebhook(updatedWebhooks[0])
+            localStorage.setItem("webhooks", JSON.stringify(updatedWebhooks));
+        } catch (error) {
+
+        }
+    }
+
+    const clearAllReponse = async () => {
+        try {
+            await axios.delete("http://localhost:4000/inspect/deleteAll", {params : {webhookId : selectedWebhook.id}})
+            setResponse([])
+            setSelectedRequest(null)
+        } catch (error) {
+            console.log(error);  
+        }
+    }
+
+    const deleteResponse = async (responseId) => {
+        try {
+            await axios.delete("http://localhost:4000/inspect", {params : {responseId}})
+            setResponse([])
+            const udpateResponse = response?.filter((res) => res.id != responseId)
+            setResponse(udpateResponse)
+
+        } catch (error) {
+            console.log(error);  
         }
     }
 
     useEffect(() => {
-        const exist = checkWebhook()
-        if(!exist) {
-            createWebhook()
+        const isWebhookExist = localStorage.getItem("webhooks");
+        if (isWebhookExist) {
+            setWebhookURLs(JSON.parse(isWebhookExist))
+            setSelectedWebhook(JSON.parse(isWebhookExist)[0])
+            return;
         }
-    },[])
-    
+        createWebhook()
+    }, [])
+
     return <dataContext.Provider value={{
         selectedWebhook, setSelectedWebhook,
-        webhookURLs
+        webhookURLs,
+        createWebhook, deleteWebhook,
+        response, getResponse,
+        selectedResquest, setSelectedRequest, clearAllReponse, deleteResponse
     }} >
         {children}
     </dataContext.Provider>

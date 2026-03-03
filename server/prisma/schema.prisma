@@ -8,7 +8,18 @@ datasource db {
 
 
 model webhook {
-  id String @id @default(cuid())
+  id String @id 
   url String @unique
   createdAt DateTime @default(now())
+  webhookResponses response[]
+}
+
+model response {
+  id String @id @default(cuid())
+  webhookId String
+  type String
+  createdAt DateTime @default(now())
+  headers Json
+  body Json
+  webhook webhook @relation(fields: [webhookId], references: [id])
 }
