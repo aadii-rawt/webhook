@@ -15,9 +15,9 @@ const Sidebar = () => {
     const menuRef = useRef<HTMLDivElement>(null)
     const drawerRef = useRef<HTMLDivElement>(null)
     const [loading, setLoading] = useState(false)
-    const [responseLoading,setResponseLoading] = useState(true)
+    const [responseLoading, setResponseLoading] = useState(true)
 
-    const { selectedWebhook, setSelectedWebhook, webhookURLs, createWebhook, deleteWebhook, response,selectedResquest, setSelectedRequest, getResponse, clearAllReponse , deleteResponse} = useData()
+    const { selectedWebhook, setSelectedWebhook, webhookURLs, createWebhook, deleteWebhook, response, setResponse, selectedResquest, setSelectedRequest, getResponse, clearAllReponse, deleteResponse } = useData()
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             const target = event.target as Node
@@ -57,15 +57,32 @@ const Sidebar = () => {
         setMenu(false)
     }
 
+    const handleCopy = (e) => {
+        e.stopPropagation()
+        navigator.clipboard.writeText(selectedWebhook.url)
+    }
+
+    const changeWebhook = (web) => {
+        setSelectedWebhook(web)
+        setDrawer(false)
+        setSelectedRequest(null)
+        setResponseLoading(true)
+        setResponse([])
+    }
+
     useEffect(() => {
-        try {
-            setResponseLoading(true)
-            getResponse()
-        } catch (error) {
-            
-        }finally{
-            setResponseLoading(false)
+        const fetchResponse = async () => {
+            try {
+                setResponseLoading(true)
+                await getResponse()
+            } catch (error) {
+    
+            } finally {
+                setResponseLoading(false)
+            }
         }
+
+         fetchResponse()
     }, [selectedWebhook])
 
     return (
@@ -103,27 +120,24 @@ const Sidebar = () => {
             </div>
 
             {/* Drawer */}
-            <div className='relative' ref={drawerRef}>
-                <div className='border rounded-xl border-white/20 p-3 py-2.5 flex gap-3 items-center justify-between'>
+            <div className='relative select-none' ref={drawerRef}>
+                <div className='border cursor-pointer rounded-xl border-white/20 p-3 py-2.5 flex gap-3 items-center justify-between'>
                     {selectedWebhook ? <h1 className='text-sm font-medium'>{selectedWebhook?.url}</h1> :
                         <div className='bg-[#333333] w-full h-5 animate-pulse rounded'>
 
                         </div>
                     }
-
                     <div className='flex items-center gap-1'>
-                        <button onClick={() => navigator.clipboard.writeText(selectedWebhook?.url)} className='text-white/50 cursor-pointer text-xs hover:text-white transition'>
+                        <button onClick={handleCopy} className='text-white/50 cursor-pointer text-xs hover:text-white transition'>
                             <IoCopyOutline />
                         </button>
 
                         <button
                             onClick={() => setDrawer(prev => !prev)}
-                            className='text-white transition cursor-pointer'
-                        >
+                            className='text-white transition cursor-pointer'>
                             <motion.div
                                 animate={{ rotate: drawer ? 180 : 0 }}
-                                transition={{ duration: 0.2 }}
-                            >
+                                transition={{ duration: 0.2 }}>
                                 <MdKeyboardArrowDown />
                             </motion.div>
                         </button>
@@ -140,7 +154,7 @@ const Sidebar = () => {
                             className='bg-[#232222] z-50 absolute w-full mt-0.5 py-1 border border-white/20 rounded-xl px-2 overflow-hidden'
                         >
                             {webhookURLs.length > 0 && webhookURLs?.map((web) => (
-                                <button onClick={() => setSelectedWebhook(web)} className='py-2 px-3 w-full rounded-lg flex items-center justify-between  hover:bg-[#272727] cursor-pointer'>
+                                <button onClick={() => changeWebhook(web)} key={web.id} className='py-2 px-3 w-full rounded-lg flex items-center justify-between  hover:bg-[#272727] cursor-pointer'>
                                     <h1 className='text-sm font-medium'>{web?.url}</h1>
                                     {web.url == selectedWebhook.url && <IoCheckmarkSharp />}
 
@@ -162,22 +176,22 @@ const Sidebar = () => {
             </div>
 
             <div className='my-3'>
-                {responseLoading ? 
-                ["", "", ""].map((_, i) => (
+                {responseLoading ?
+                    ["", "", ""].map((_, i) => (
                         <div key={i} className='flex rounded-lg duration-300 my-3 w-full bg-[#333333] h-8 animate-pulse cursor-pointer items-center justify-between py-3 px-3 hover:bg-[#272727]'>
 
                         </div>
-                    )) : 
-                 response.length > 0 ? response.map((res, i) => (
-                    <div onClick={() => setSelectedRequest(res)} key={i} className='flex rounded-lg duration-300 cursor-pointer items-center justify-between py-3 px-3 hover:bg-[#272727]'>
-                        <h1 className='text-[15px]'>{res?.type}</h1>
-                        <div className='flex gap-2'>
-                            <p className='text-[13px] text-gray-400'>{res.createdAt}</p>
-                            {selectedResquest?.id == res?.id && <button onClick={() => deleteResponse(res.id)} className='text-gray-400 cursor-pointer hover:text-white'><HiOutlineTrash /></button> }
+                    )) :
+                    response.length > 0 ? response.map((res, i) => (
+                        <div onClick={() => setSelectedRequest(res)} key={i} className={`${selectedResquest?.id == res?.id && "bg-[#272727]"} flex rounded-lg duration-300 cursor-pointer items-center justify-between py-3 px-3 hover:bg-[#272727]`}>
+                            <h1 className='text-[15px]'>{res?.type}</h1>
+                            <div className='flex gap-2'>
+                                <p className='text-[13px] text-gray-400'>{res?.createdAt}</p>
+                                {selectedResquest?.id == res?.id && <button onClick={() => deleteResponse(res?.id)} className='text-gray-400 cursor-pointer hover:text-white'><HiOutlineTrash /></button>}
+                            </div>
                         </div>
-                    </div>
-                )) :
-                    <h1 className='w-full text-center text-sm mt-5 text-gray-500'>No request yet</h1>
+                    )) :
+                        <h1 className='w-full text-center text-sm mt-5 text-gray-500'>No request yet</h1>
                 }
 
             </div>

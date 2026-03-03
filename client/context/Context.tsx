@@ -15,6 +15,7 @@ interface ContextInter {
     createWebhook: () => void,
     deleteWebhook: () => void,
     response: any,
+    setResponse : any ,
     selectedResquest: any,
     setSelectedRequest: any,
     getResponse: () => any,
@@ -94,7 +95,7 @@ export const DataProvider = ({ children }: { children: any }) => {
             setResponse([])
             const udpateResponse = response?.filter((res) => res.id != responseId)
             setResponse(udpateResponse)
-
+            setSelectedRequest(null)
         } catch (error) {
             console.log(error);  
         }
@@ -114,7 +115,7 @@ export const DataProvider = ({ children }: { children: any }) => {
         selectedWebhook, setSelectedWebhook,
         webhookURLs,
         createWebhook, deleteWebhook,
-        response, getResponse,
+        response, getResponse, setResponse,
         selectedResquest, setSelectedRequest, clearAllReponse, deleteResponse
     }} >
         {children}
