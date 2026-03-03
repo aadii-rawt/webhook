@@ -8,6 +8,7 @@ import { VscClearAll } from 'react-icons/vsc'
 import useData from '@/context/Context'
 import Spinner from './Spinner'
 import { div, h1 } from 'motion/react-client'
+import { responseType } from '@/types/type'
 
 const Sidebar = () => {
     const [drawer, setDrawer] = useState(false)
@@ -153,8 +154,8 @@ const Sidebar = () => {
                             transition={{ duration: 0.25 }}
                             className='bg-[#232222] z-50 absolute w-full mt-0.5 py-1 border border-white/20 rounded-xl px-2 overflow-hidden'
                         >
-                            {webhookURLs.length > 0 && webhookURLs?.map((web) => (
-                                <button onClick={() => changeWebhook(web)} key={web.id} className='py-2 px-3 w-full rounded-lg flex items-center justify-between  hover:bg-[#272727] cursor-pointer'>
+                            {webhookURLs.length > 0 && webhookURLs?.map((web,i) => (
+                                <button onClick={() => changeWebhook(web)} key={i} className='py-2 px-3 w-full rounded-lg flex items-center justify-between  hover:bg-[#272727] cursor-pointer'>
                                     <h1 className='text-sm font-medium'>{web?.url}</h1>
                                     {web.url == selectedWebhook.url && <IoCheckmarkSharp />}
 
@@ -182,7 +183,7 @@ const Sidebar = () => {
 
                         </div>
                     )) :
-                    response.length > 0 ? response.map((res, i) => (
+                    response.length > 0 ? response.map((res : responseType, i) => (
                         <div onClick={() => setSelectedRequest(res)} key={i} className={`${selectedResquest?.id == res?.id && "bg-[#272727]"} flex rounded-lg duration-300 cursor-pointer items-center justify-between py-3 px-3 hover:bg-[#272727]`}>
                             <h1 className='text-[15px]'>{res?.type}</h1>
                             <div className='flex gap-2'>

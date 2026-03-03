@@ -1,5 +1,6 @@
 "use client"
 import api from "@/axios/axios";
+import { responseType, webhookType } from "@/types/type";
 import axios from "axios";
 import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 
@@ -8,28 +9,28 @@ interface WebhookURLInter {
 }
 
 interface ContextInter {
-    selectedWebhook: WebhookURLInter,
-    setSelectedWebhook: Dispatch<SetStateAction<WebhookURLInter>>,
-    webhookURLs: WebhookURLInter[],
-    setWebhookURLs: Dispatch<SetStateAction<WebhookURLInter[]>>,
+    webhookURLs: webhookType[],
+    setWebhookURLs: Dispatch<SetStateAction<webhookType[]>>,
+    selectedWebhook: webhookType,
+    setSelectedWebhook: Dispatch<SetStateAction<webhookType>>,
     createWebhook: () => void,
     deleteWebhook: () => void,
-    response: any,
-    setResponse : any ,
-    selectedResquest: any,
-    setSelectedRequest: any,
+    response: responseType[],
+    setResponse : Dispatch<SetStateAction<responseType[]>> ,
+    selectedResquest: responseType,
+    setSelectedRequest: Dispatch<SetStateAction<responseType>>,
     getResponse: () => any,
     clearAllReponse : () => void,
-    deleteResponse : () => void | any
+    deleteResponse : (responseId : String) => void,
 }
 
 const dataContext = createContext<ContextInter>(null);
 
 export const DataProvider = ({ children }: { children: any }) => {
-    const [webhookURLs, setWebhookURLs] = useState<WebhookURLInter[] | []>([])
-    const [selectedWebhook, setSelectedWebhook] = useState(null);
-    const [response, setResponse] = useState<any>([])
-    const [selectedResquest, setSelectedRequest] = useState(null)
+    const [webhookURLs, setWebhookURLs] = useState<webhookType[] | []>([])
+    const [selectedWebhook, setSelectedWebhook] = useState<webhookType>(null);
+    const [response, setResponse] = useState<responseType[] | any>([])
+    const [selectedResquest, setSelectedRequest] = useState<responseType | any>(null)
 
     const createWebhook = async () => {
         try {
@@ -111,6 +112,7 @@ export const DataProvider = ({ children }: { children: any }) => {
         createWebhook()
     }, [])
 
+    // @ts-ignore
     return <dataContext.Provider value={{
         selectedWebhook, setSelectedWebhook,
         webhookURLs,
