@@ -1,12 +1,12 @@
 export type webhookType = {
-    id: String,
-    url: String,
+    id: string,
+    url: string,
     createdAt: Date,
 }
 
 export type responseType = {
-    id: String,
-    webhookId: String,
+    id: string,
+    webhookId: string,
     type: String,
     body: any,
     headers: AudioNode,
