@@ -5,7 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-   "build": "echo build skipped",
+    "build": "echo build skipped",
+    "postinstall": "prisma generate",
     "start": "node dist/index.js",
     "dev": "tsx watch src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
