@@ -16,12 +16,12 @@ interface ContextInter {
     createWebhook: () => void,
     deleteWebhook: () => void,
     response: responseType[],
-    setResponse : Dispatch<SetStateAction<responseType[]>> ,
+    setResponse: Dispatch<SetStateAction<responseType[]>>,
     selectedResquest: responseType,
     setSelectedRequest: Dispatch<SetStateAction<responseType>>,
     getResponse: () => any,
-    clearAllReponse : () => void,
-    deleteResponse : (responseId : String) => void,
+    clearAllReponse: () => void,
+    deleteResponse: (responseId: String) => void,
 }
 
 const dataContext = createContext<ContextInter>(null);
@@ -34,12 +34,13 @@ export const DataProvider = ({ children }: { children: any }) => {
 
     const createWebhook = async () => {
         try {
-            const { data } = await api.post("/webhook/create")
+            const { data } = await axios.post("/api/v1/webhook")
             const localWebhook = localStorage.getItem("webhooks")
             setSelectedWebhook(data.data)
             setWebhookURLs((prev) => ([...prev, data.data]))
             const udpatedData = localWebhook ? [...JSON.parse(localWebhook), data.data] : [data.data]
-            localStorage.setItem("webhooks", JSON.stringify(udpatedData))
+            localStorage.setItem("webhooks", JSON.stringify(udpatedData));
+            setSelectedRequest(null)
         } catch (error) {
             console.log(error)
         }
@@ -48,13 +49,13 @@ export const DataProvider = ({ children }: { children: any }) => {
     const getResponse = async () => {
         try {
             if (!selectedWebhook.id) return
-            const { data } = await axios.get(`${process.env.URL}/inspect`, {
+            const { data } = await axios.get(`/api/v1/response`, {
                 params: {
                     webhookId: selectedWebhook.id
                 }
             });
             setResponse(data.data)
-            if(data?.data?.length > 0) {
+            if (data?.data?.length > 0) {
                 setSelectedRequest(data.data?.[0])
             }
         } catch (error) {
@@ -66,9 +67,7 @@ export const DataProvider = ({ children }: { children: any }) => {
         try {
             if (!selectedWebhook.id) return
             await api.delete("/webhook", {
-                params: {
-                    webhookId: selectedWebhook?.id
-                }
+                webhookId: selectedWebhook?.id
             })
 
             const updatedWebhooks = webhookURLs?.filter((item) => item.id != selectedWebhook.id)
@@ -82,23 +81,23 @@ export const DataProvider = ({ children }: { children: any }) => {
 
     const clearAllReponse = async () => {
         try {
-            await axios.delete(`${process.env.URL}/inspect/deleteAll`, {params : {webhookId : selectedWebhook.id}})
+            await axios.delete(`/api/v1/response/delete-all`, { params: { webhookId: selectedWebhook.id } })
             setResponse([])
             setSelectedRequest(null)
         } catch (error) {
-            console.log(error);  
+            console.log(error);
         }
     }
 
     const deleteResponse = async (responseId) => {
         try {
-            await axios.delete(`${process.env.URL}/inspect`, {params : {responseId}})
+            await axios.delete(`${process.env.URL}/inspect`, { params: { responseId } })
             setResponse([])
             const udpateResponse = response?.filter((res) => res.id != responseId)
             setResponse(udpateResponse)
             setSelectedRequest(null)
         } catch (error) {
-            console.log(error);  
+            console.log(error);
         }
     }
 

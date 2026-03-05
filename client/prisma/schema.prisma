@@ -1,0 +1,32 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model webhook {
+  id String @id 
+  url String @unique
+  createdAt DateTime @default(now())
+  webhookResponses response[]
+}
+
+model response {
+  id String @id @default(cuid())
+  webhookId String
+  type String
+  createdAt DateTime @default(now())
+  headers Json
+  body Json
+  webhook webhook @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+}

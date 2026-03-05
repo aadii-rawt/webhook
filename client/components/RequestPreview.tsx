@@ -22,8 +22,13 @@ const RequestPreview = () => {
   const { selectedResquest } = useData()
   console.log(selectedResquest);
 
+  const headers =
+    typeof selectedResquest?.headers === "string"
+      ? JSON.parse(selectedResquest.headers)
+      : selectedResquest?.headers;
+
   return (
-    <div className="flex-1 h-full bg-[#181818] overflow-y-auto ovefi relative">
+    <div className="flex-1 h-full bg-[#181818] overflow-y-auto hide-scrollbar relative">
       {selectedResquest ?
         <div className='p-10 '>
           <h1 className='text-xl'>{selectedResquest?.type} <span className='text-gray-400'>/</span></h1>
@@ -32,20 +37,21 @@ const RequestPreview = () => {
             <h1 className='font-medium text-lg'>Headers</h1>
 
             <div className='border border-white/10 rounded-xl mt-5'>
-              {Object?.keys(selectedResquest?.headers).map((key, index) => (
-                <div
-                  key={index}
-                  className="grid grid-cols-2 px-8  text-sm py-3 border-b border-white/10 last:border-b-0"
-                >
-                  <span className="text-gray-400 font-medium">
-                    {key}
-                  </span>
+              {headers &&
+                Object.keys(headers).map((key, index) => (
+                  <div
+                    key={index}
+                    className="grid grid-cols-2 px-8  text-sm py-3 border-b border-white/10 last:border-b-0"
+                  >
+                    <span className="text-gray-400 font-medium">
+                      {key}
+                    </span>
 
-                  <span className="text-gray-200">
-                    {selectedResquest?.headers[key]}
-                  </span>
-                </div>
-              ))}
+                    <span className="text-gray-200">
+                      {headers[key]}
+                    </span>
+                  </div>
+                ))}
             </div>
           </div>
           {/*  body */}

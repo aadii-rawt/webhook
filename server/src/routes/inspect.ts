@@ -4,8 +4,8 @@ import { deleteAllResponse, deleteResponse, getResponse, inspectWebhook } from "
 const inspectRoutes = Router();
 
 inspectRoutes.post("/:id", inspectWebhook)
-inspectRoutes.get("",getResponse )
-inspectRoutes.delete("", deleteResponse )
-inspectRoutes.delete("/deleteAll",deleteAllResponse)
+inspectRoutes.get("",getResponse ) //
+inspectRoutes.delete("", deleteResponse ) //
+inspectRoutes.delete("/deleteAll",deleteAllResponse) //
 
 export default inspectRoutes

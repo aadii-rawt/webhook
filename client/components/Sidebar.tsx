@@ -17,6 +17,7 @@ const Sidebar = () => {
     const drawerRef = useRef<HTMLDivElement>(null)
     const [loading, setLoading] = useState(false)
     const [responseLoading, setResponseLoading] = useState(true)
+    const [clearReponseLoading, setClearResponseLoading] = useState(false)
 
     const { selectedWebhook, setSelectedWebhook, webhookURLs, createWebhook, deleteWebhook, response, setResponse, selectedResquest, setSelectedRequest, getResponse, clearAllReponse, deleteResponse } = useData()
     useEffect(() => {
@@ -71,19 +72,32 @@ const Sidebar = () => {
         setResponse([])
     }
 
+    const handleAllResponse = async () => {
+        try {
+            setClearResponseLoading(true)
+            await clearAllReponse()
+        } catch (error) {
+
+        } finally {
+            setClearResponseLoading(false)
+            setMenu(false)
+        }
+    }
+
     useEffect(() => {
         const fetchResponse = async () => {
             try {
                 setResponseLoading(true)
                 await getResponse()
             } catch (error) {
-    
+
             } finally {
-                setResponseLoading(false)
+                setResponseLoading(false);
+
             }
         }
 
-         fetchResponse()
+        fetchResponse()
     }, [selectedWebhook])
 
     return (
@@ -107,14 +121,19 @@ const Sidebar = () => {
                             transition={{ duration: 0.15 }}
                             className='absolute min-w-50 right-0 bg-[#272727] px-1 py-2 rounded-xl text-[15px] z-50 top-10 space-y-1'
                         >
-                            <div onClick={clearAllReponse} className='hover:bg-[#1e1e1e] flex items-center justify-between cursor-pointer rounded-md p-2'>
-                                <h1>Clear requests</h1>
-                                <VscClearAll />
+                            <div onClick={handleAllResponse} className='hover:bg-[#1e1e1e] flex items-center justify-between cursor-pointer rounded-md p-2'>
+                                {clearReponseLoading ? <div className='flex items-center justify-center w-full'> <Spinner /> </div> : <>
+                                    <h1>Clear requests</h1>
+                                    <VscClearAll />
+                                </>
+                                }
                             </div>
-                            <button onClick={handleDeleteWebhook} className='w-full hover:bg-[#1e1e1e] flex items-center justify-between text-red-400 cursor-pointer rounded-md p-2'>
+
+                            {webhookURLs.length > 1 && <button onClick={handleDeleteWebhook} className='w-full hover:bg-[#1e1e1e] flex items-center justify-between text-red-400 cursor-pointer rounded-md p-2'>
                                 <h1>Delete webhook</h1>
                                 <HiOutlineTrash />
                             </button>
+                            }
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -154,7 +173,7 @@ const Sidebar = () => {
                             transition={{ duration: 0.25 }}
                             className='bg-[#232222] z-50 absolute w-full mt-0.5 py-1 border border-white/20 rounded-xl px-2 overflow-hidden'
                         >
-                            {webhookURLs.length > 0 && webhookURLs?.map((web,i) => (
+                            {webhookURLs.length > 0 && webhookURLs?.map((web, i) => (
                                 <button onClick={() => changeWebhook(web)} key={i} className='py-2 px-3 w-full rounded-lg flex items-center justify-between  hover:bg-[#272727] cursor-pointer'>
                                     <h1 className='text-sm font-medium'>{web?.url}</h1>
                                     {web.url == selectedWebhook.url && <IoCheckmarkSharp />}
@@ -162,15 +181,17 @@ const Sidebar = () => {
                                 </button>
                             ))}
 
-                            <hr className='border-white/20 border-[0.9px] my-2' />
-                            <button disabled={loading} onClick={createNewWebhook} className='py-2 px-3 w-full rounded-lg  hover:bg-[#272727] cursor-pointer'>
-                                {loading ?
-                                    <div className='flex w-full items-center text-center justify-center'>
-                                        <Spinner />
-                                    </div> :
-                                    <h1 className='text-sm text-left font-medium'>New Webhook</h1>
-                                }
-                            </button>
+                            {webhookURLs.length < 4 && <>
+                                <hr className='border-white/20 border-[0.9px] my-2' />
+                                <button disabled={loading} onClick={createNewWebhook} className='py-2 px-3 w-full rounded-lg  hover:bg-[#272727] cursor-pointer'>
+                                    {loading ?
+                                        <div className='flex w-full items-center text-center justify-center'>
+                                            <Spinner />
+                                        </div> :
+                                        <h1 className='text-sm text-left font-medium'>New Webhook</h1>
+                                    }
+                                </button>
+                            </>}
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -183,7 +204,7 @@ const Sidebar = () => {
 
                         </div>
                     )) :
-                    response.length > 0 ? response.map((res : responseType, i) => (
+                    response.length > 0 ? response.map((res: responseType, i) => (
                         <div onClick={() => setSelectedRequest(res)} key={i} className={`${selectedResquest?.id == res?.id && "bg-[#272727]"} flex rounded-lg duration-300 cursor-pointer items-center justify-between py-3 px-3 hover:bg-[#272727]`}>
                             <h1 className='text-[15px]'>{res?.type}</h1>
                             <div className='flex gap-2'>
