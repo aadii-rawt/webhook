@@ -5,7 +5,7 @@ export const POST = async (req: Request,
     { params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params;
 
-      const headers = Object.fromEntries(req.headers.entries());
+    const headers = Object.fromEntries(req.headers.entries());
     const body = await req.json()
 
 

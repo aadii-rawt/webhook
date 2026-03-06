@@ -9,6 +9,8 @@ import useData from '@/context/Context'
 import Spinner from './Spinner'
 import { div, h1 } from 'motion/react-client'
 import { responseType } from '@/types/type'
+import { createRoot } from 'react-dom/client'
+import { IoMdCheckmark } from "react-icons/io";
 
 const Sidebar = () => {
     const [drawer, setDrawer] = useState(false)
@@ -17,7 +19,8 @@ const Sidebar = () => {
     const drawerRef = useRef<HTMLDivElement>(null)
     const [loading, setLoading] = useState(false)
     const [responseLoading, setResponseLoading] = useState(true)
-    const [clearReponseLoading, setClearResponseLoading] = useState(false)
+    const [clearReponseLoading, setClearResponseLoading] = useState(false);
+    const copyRef = useRef(null)
 
     const { selectedWebhook, setSelectedWebhook, webhookURLs, createWebhook, deleteWebhook, response, setResponse, selectedResquest, setSelectedRequest, getResponse, clearAllReponse, deleteResponse } = useData()
     useEffect(() => {
@@ -61,7 +64,16 @@ const Sidebar = () => {
 
     const handleCopy = (e) => {
         e.stopPropagation()
-        navigator.clipboard.writeText(selectedWebhook.url)
+        navigator.clipboard.writeText(selectedWebhook.url);
+        if (copyRef.current) {
+            const root = createRoot(copyRef.current);
+            root.render(<IoMdCheckmark />)
+
+            setTimeout(() => {
+                const root = createRoot(copyRef.current!);
+                root.render(<IoCopyOutline />)
+            }, 1000);
+        }
     }
 
     const changeWebhook = (web) => {
@@ -83,6 +95,7 @@ const Sidebar = () => {
             setMenu(false)
         }
     }
+
 
     useEffect(() => {
         const fetchResponse = async () => {
@@ -148,7 +161,7 @@ const Sidebar = () => {
                         </div>
                     }
                     <div className='flex items-center gap-1'>
-                        <button onClick={handleCopy} className='text-white/50 cursor-pointer text-xs hover:text-white transition'>
+                        <button ref={copyRef} onClick={handleCopy} className='text-white/50 cursor-pointer text-xs hover:text-white transition'>
                             <IoCopyOutline />
                         </button>
 

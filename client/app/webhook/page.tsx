@@ -5,7 +5,7 @@ import React from 'react'
 const Webhook = () => {
     return (
         <div className="w-full h-screen flex items-center justify-center bg-black">
-            <div className="border border-white/20 rounded-xl w-full max-w-6xl h-[75vh] flex">
+            <div className="border border-white/20 rounded-xl w-full max-w-6xl overflow-hidden h-[75vh] flex">
                 <Sidebar />
                 <RequestPreview />
             </div>
