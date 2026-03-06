@@ -11,6 +11,9 @@ export const GET = async (req: Request) => {
             where: {
                 // @ts-ignore
                 webhookId: webhookId,
+            },
+            orderBy : {
+                createdAt : "desc"
             }
         })
 

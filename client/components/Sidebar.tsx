@@ -12,6 +12,17 @@ import { responseType } from '@/types/type'
 import { createRoot } from 'react-dom/client'
 import { IoMdCheckmark } from "react-icons/io";
 
+function formatDate(date: string | Date) {
+    const d = new Date(date);
+
+    const day = d.getDate();
+    const month = d.toLocaleString("en-US", { month: "short" });
+    const hours = String(d.getHours()).padStart(2, "0");
+    const minutes = String(d.getMinutes()).padStart(2, "0");
+
+    return `${day} ${month} ${hours}:${minutes}`;
+}
+
 const Sidebar = () => {
     const [drawer, setDrawer] = useState(false)
     const [menu, setMenu] = useState(false)
@@ -221,7 +232,7 @@ const Sidebar = () => {
                         <div onClick={() => setSelectedRequest(res)} key={i} className={`${selectedResquest?.id == res?.id && "bg-[#272727]"} flex rounded-lg duration-300 cursor-pointer items-center justify-between py-3 px-3 hover:bg-[#272727]`}>
                             <h1 className='text-[15px]'>{res?.type}</h1>
                             <div className='flex gap-2'>
-                                <p className='text-[13px] text-gray-400'>{res?.createdAt}</p>
+                                <p className='text-[13px] text-gray-400'>{formatDate(res?.createdAt)}</p>
                                 {selectedResquest?.id == res?.id && <button onClick={() => deleteResponse(res?.id)} className='text-gray-400 cursor-pointer hover:text-white'><HiOutlineTrash /></button>}
                             </div>
                         </div>
